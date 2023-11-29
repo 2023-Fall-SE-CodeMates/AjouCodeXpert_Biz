@@ -1,2 +1,10 @@
-package codemates.ajoucodexpert.repository;public interface AuthorityRepository {
+package codemates.ajoucodexpert.repository;
+
+import codemates.ajoucodexpert.domain.Authority;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+
+public interface AuthorityRepository extends JpaRepository<Authority, Long> {
+    Optional<Authority> findByCode(Short id);
 }
