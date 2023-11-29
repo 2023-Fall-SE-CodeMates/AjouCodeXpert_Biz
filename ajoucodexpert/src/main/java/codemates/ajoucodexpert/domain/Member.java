@@ -24,4 +24,10 @@ public class Member extends BaseEntity {
     @Column(name="usr_code", nullable = false, length=9)
     private String studentCode;
 
+    @ManyToMany
+    @JoinTable(name="Member_Auth",
+            joinColumns = @JoinColumn(name="usr_id", referencedColumnName = "usr_id"),
+            inverseJoinColumns = @JoinColumn(name="auth_code", referencedColumnName = "auth_code"))
+    private Set<Authority> authorities;
+
 }
