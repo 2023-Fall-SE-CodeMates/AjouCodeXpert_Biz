@@ -1,7 +1,7 @@
 package codemates.ajoucodexpert.security.principalUser;
 
 import codemates.ajoucodexpert.domain.Member;
-import codemates.ajoucodexpert.domain.MemberRepository;
+import codemates.ajoucodexpert.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
