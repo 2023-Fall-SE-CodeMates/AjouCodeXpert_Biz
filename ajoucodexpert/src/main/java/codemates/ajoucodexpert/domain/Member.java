@@ -21,8 +21,13 @@ public class Member extends BaseEntity {
     @Column(name="usr_name", nullable = false, length=30)
     private String name;
 
-    @Column(name="usr_code", nullable = false, length=9)
-    private String studentCode;
+    @ManyToOne
+    @JoinColumn(name="mjr_code", referencedColumnName = "mjr_code")
+    private Major major;
+
+    @OneToOne
+    @JoinColumn(name="std_code", referencedColumnName = "std_code")
+    private StudentInfo studentInfo;
 
     @ManyToMany
     @JoinTable(name="Member_Auth",
