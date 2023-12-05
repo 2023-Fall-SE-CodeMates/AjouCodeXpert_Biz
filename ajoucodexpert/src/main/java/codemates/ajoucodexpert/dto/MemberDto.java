@@ -11,7 +11,7 @@ public class MemberDto {
     @Builder
     @AllArgsConstructor @NoArgsConstructor
     public static class Login{
-        private String email;
+        private String loginId;
         private String pw;
     }
 
@@ -19,7 +19,7 @@ public class MemberDto {
     @Builder
     @AllArgsConstructor @NoArgsConstructor
     public static class Signup {
-        private Long id;
+        private String id;
         private String pw;
         private String name;
         private String studentId;
