@@ -16,8 +16,8 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends GenericFilter {
     private final JwtTokenProvider jwtTokenProvider;
-    @Value("{{jwt.header}}") String header;
-    @Value("{{jwt.prefix}}") String prefix;
+    @Value("{{jwt.header}}") public static String header;
+    @Value("{{jwt.prefix}}") public static String prefix;
 
 
     /**
