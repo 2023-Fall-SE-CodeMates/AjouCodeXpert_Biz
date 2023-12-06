@@ -2,6 +2,8 @@ package codemates.ajoucodexpert.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.Set;
 
@@ -22,14 +24,16 @@ public class Member extends BaseEntity {
     private String name;
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name="mjr_code", referencedColumnName = "mjr_code")
     private Major major;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="std_code", referencedColumnName = "std_code")
     private StudentInfo studentInfo;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinTable(name="Member_Auth",
             joinColumns = @JoinColumn(name="usr_id", referencedColumnName = "usr_id"),
             inverseJoinColumns = @JoinColumn(name="auth_code", referencedColumnName = "auth_code"))
