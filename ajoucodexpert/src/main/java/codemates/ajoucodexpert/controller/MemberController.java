@@ -44,10 +44,15 @@ public class MemberController {
             // 입력한 전공 코드가 DB에 존재하는지 확인
             major = majorService.findByMajorCode(signupDto.getMajorCode());
             if (major == null) throw new BusinessException(ExceptionType.DATA_NOT_FOUND, "존재하지 않는 전공 코드입니다.");
-            // 권한 설정
+            // 권한 추출
             Authority auth = authorityService.getAuthorityByCode(signupDto.getRoleCode());
+
             if (auth == null) throw new BusinessException(ExceptionType.DATA_NOT_FOUND, "존재하지 않는 권한 코드입니다.");
-            else authorities.add(auth);
+            else {
+                // 권한 설정 (default: ROLE_STUDENT)
+                Authority studentAuth = authorityService.getAuthorityByCode(2);
+                authorities.add(studentAuth);
+            }
             // 입력한 학번으로 가입한 회원이 있는지 확인
             if (memberService.isExistStudent(signupDto.getStudentId()))
                 throw new BusinessException(ExceptionType.DATA_ALREADY_EXIST, "이미 가입된 학번입니다.");
@@ -65,6 +70,8 @@ public class MemberController {
         // 회원 생성
         Member created = mf.createMember(signupDto, authorities, studentInfo, major);
         memberService.saveMember(created);
+
+
 
         return ResponseEntity.noContent().build();
     }
