@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 
@@ -18,10 +20,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class UserRequest extends BaseEntity {
+    final static int unprocessed = 0;
+    final static int accepted = 1;
+    final static int rejected = -1;
+
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @Column(name = "requester_id", length = 30)
-    private String requesterId;
     @Column(name = "request_time")
     private LocalDateTime requestTime;
     @Column(name = "request_status")
@@ -29,8 +33,13 @@ public abstract class UserRequest extends BaseEntity {
     @Column(name = "complete_time")
     private LocalDateTime completeTime;
 
-    public UserRequest(String requesterId, LocalDateTime requestTime, int i, LocalDateTime completeTime) {
-        this.requesterId = requesterId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "requester_id", referencedColumnName = "id")
+    private Member requester;
+
+    public UserRequest(Member requester, LocalDateTime requestTime, int i, LocalDateTime completeTime) {
+        this.requester = requester;
         this.requestTime = requestTime;
         this.requestStatus = i;
         this.completeTime = completeTime;
