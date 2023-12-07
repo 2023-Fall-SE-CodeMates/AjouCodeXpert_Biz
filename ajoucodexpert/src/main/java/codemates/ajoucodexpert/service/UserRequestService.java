@@ -1,2 +1,4 @@
-package codemates.ajoucodexpert.service;public interface UserRequestService {
+package codemates.ajoucodexpert.service;
+
+public interface UserRequestService {
 }
