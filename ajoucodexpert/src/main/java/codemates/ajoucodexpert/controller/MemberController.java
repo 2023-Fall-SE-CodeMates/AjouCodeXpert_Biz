@@ -31,7 +31,8 @@ public class MemberController {
     private final UpdateRoleRequestManager updateRoleRequestManager;
 
     @PostMapping("/signup")
-    public ResponseEntity<MemberDto.Signup> createMember(@RequestBody MemberDto.Signup signupDto) {
+    public ResponseEntity<MemberDto.Signup> createMember(@RequestBody MemberDto.Signup signupDto)
+    throws BusinessException {
         log.debug("회원가입 요청 받음 : {}", signupDto.getId());
         StudentInfo studentInfo = null;
         Major major = null;
@@ -56,8 +57,12 @@ public class MemberController {
             if (memberService.isExistId(signupDto.getId()))
                 throw new BusinessException(ExceptionType.DATA_ALREADY_EXIST, "이미 존재하는 아이디입니다.");
 
+        } catch (BusinessException e) {
+            log.error("회원가입 실패 : {}", e.getMessage());
+            throw e;
         } catch (Exception e) {
             log.error("회원가입 실패 : {}", e.getMessage());
+            return ResponseEntity.badRequest().build();
         }
 
         if (auth == null) throw new BusinessException(ExceptionType.DATA_NOT_FOUND, "존재하지 않는 권한 코드입니다.");
