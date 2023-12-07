@@ -45,10 +45,10 @@ public abstract class UserRequest extends BaseEntity {
         this.completeTime = completeTime;
     }
 
-    abstract void accept();
+    public abstract void accept();
 
-    abstract void reject();
+    public abstract void reject();
 
-    abstract void process();
+    public abstract void process();
 
 }

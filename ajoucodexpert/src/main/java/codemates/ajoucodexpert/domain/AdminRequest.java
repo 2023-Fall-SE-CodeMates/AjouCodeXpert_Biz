@@ -15,19 +15,19 @@ public class AdminRequest extends UserRequest{
         super(requester, requestTime, unprocessed, null);
     }
     @Override
-    void accept() {
+    public void accept() {
         this.setRequestStatus(accepted);
         this.process();
     }
 
     @Override
-    void reject() {
+    public void reject() {
         this.setRequestStatus(rejected);
         this.process();
     }
 
     @Override
-    void process() {
+    public void process() {
         this.setCompleteTime(LocalDateTime.now());
     }
 }
