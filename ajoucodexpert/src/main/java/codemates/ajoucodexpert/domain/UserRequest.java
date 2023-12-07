@@ -35,7 +35,7 @@ public abstract class UserRequest extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "requester_id", referencedColumnName = "id")
+    @JoinColumn(name = "requester_id", referencedColumnName = "usr_id")
     private Member requester;
 
     public UserRequest(Member requester, LocalDateTime requestTime, int i, LocalDateTime completeTime) {

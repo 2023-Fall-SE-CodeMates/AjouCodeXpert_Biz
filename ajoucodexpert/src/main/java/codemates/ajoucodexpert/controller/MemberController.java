@@ -28,12 +28,14 @@ public class MemberController {
     private final StudentInfoService studentInfoService;
     private final MajorService majorService;
     private final AuthorityService authorityService;
+    private final UpdateRoleRequestManager updateRoleRequestManager;
 
     @PostMapping("/signup")
     public ResponseEntity<MemberDto.Signup> createMember(@RequestBody MemberDto.Signup signupDto) {
         log.debug("회원가입 요청 받음 : {}", signupDto.getId());
         StudentInfo studentInfo = null;
         Major major = null;
+        Authority auth = null;
         Set<Authority> authorities = new HashSet<>();
         MemberFactory mf;
 
@@ -45,14 +47,8 @@ public class MemberController {
             major = majorService.findByMajorCode(signupDto.getMajorCode());
             if (major == null) throw new BusinessException(ExceptionType.DATA_NOT_FOUND, "존재하지 않는 전공 코드입니다.");
             // 권한 추출
-            Authority auth = authorityService.getAuthorityByCode(signupDto.getRoleCode());
+            auth = authorityService.getAuthorityByCode(signupDto.getRoleCode());
 
-            if (auth == null) throw new BusinessException(ExceptionType.DATA_NOT_FOUND, "존재하지 않는 권한 코드입니다.");
-            else {
-                // 권한 설정 (default: ROLE_STUDENT)
-                Authority studentAuth = authorityService.getAuthorityByCode(2);
-                authorities.add(studentAuth);
-            }
             // 입력한 학번으로 가입한 회원이 있는지 확인
             if (memberService.isExistStudent(signupDto.getStudentId()))
                 throw new BusinessException(ExceptionType.DATA_ALREADY_EXIST, "이미 가입된 학번입니다.");
@@ -64,14 +60,23 @@ public class MemberController {
             log.error("회원가입 실패 : {}", e.getMessage());
         }
 
+        if (auth == null) throw new BusinessException(ExceptionType.DATA_NOT_FOUND, "존재하지 않는 권한 코드입니다.");
+        else {
+            // 권한 설정 (default: ROLE_STUDENT)
+            authorities.add(authorityService.getAuthorityByCode(2));
+        }
+
         // memberFactory를 통해 회원 생성
         mf = memberService.getMemberFactory();
 
         // 회원 생성
         Member created = mf.createMember(signupDto, authorities, studentInfo, major);
-        memberService.saveMember(created);
+        created = memberService.saveMember(created);
 
-
+        // 가입시 권한이 ROLE_ADMIN, ROLE_TA라면 권한 요청 생성
+        if (auth.getCode() == 0 || auth.getCode() == 1) {
+            updateRoleRequestManager.createRequest(created, auth);
+        }
 
         return ResponseEntity.noContent().build();
     }
