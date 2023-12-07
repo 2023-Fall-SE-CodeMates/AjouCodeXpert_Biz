@@ -1,5 +1,6 @@
 package codemates.ajoucodexpert.service;
 
+import codemates.ajoucodexpert.domain.Authority;
 import codemates.ajoucodexpert.domain.Member;
 
 public interface MemberService {
@@ -12,4 +13,5 @@ public interface MemberService {
     // loginId를 통해 Member를 가져오는 메서드
     Member getMember(String loginId);
     Member saveMember(Member member);
+    void updateRole(Member member, Authority authority);
 }

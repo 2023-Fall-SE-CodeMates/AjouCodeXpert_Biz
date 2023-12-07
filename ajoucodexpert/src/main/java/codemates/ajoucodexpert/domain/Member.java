@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "Member")
-@Getter
+@Getter @Setter
 @Builder
 @AllArgsConstructor @NoArgsConstructor
 public class Member extends BaseEntity {
