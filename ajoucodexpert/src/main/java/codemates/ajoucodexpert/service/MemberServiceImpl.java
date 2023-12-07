@@ -4,6 +4,8 @@ import codemates.ajoucodexpert.domain.Member;
 import codemates.ajoucodexpert.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,7 +15,7 @@ public class MemberServiceImpl implements MemberService{
     private final MemberRepository memberRepository;
     @Override
     public MemberFactory getMemberFactory() {
-        return new MemberFactoryImpl();
+        return new MemberFactoryImpl(new BCryptPasswordEncoder());
     }
 
     @Override
