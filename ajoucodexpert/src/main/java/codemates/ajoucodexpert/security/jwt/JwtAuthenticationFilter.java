@@ -19,7 +19,7 @@ public class JwtAuthenticationFilter extends GenericFilter {
     //@Value("${jwt.header}") public static String header;
     public static String header = "Authorization";
     //@Value("${jwt.prefix}") public static String prefix;
-    public static String prefix;
+    public static String prefix = "Bearer";
 
 
     /**
