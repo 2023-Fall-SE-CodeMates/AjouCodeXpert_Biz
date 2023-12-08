@@ -20,4 +20,8 @@ public class UpdateRoleRequestManager implements UserRequestService {
         UpdateRoleRequest updateRoleRequest = new UpdateRoleRequest(member, authority);
         return updateRoleRequestRepository.save(updateRoleRequest);
     }
+
+    public UpdateRoleRequest getRequest(Long id) {
+        return updateRoleRequestRepository.findById(id).orElse(null);
+    }
 }
