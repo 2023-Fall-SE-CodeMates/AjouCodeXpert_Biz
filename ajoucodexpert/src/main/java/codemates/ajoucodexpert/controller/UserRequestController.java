@@ -3,6 +3,7 @@ package codemates.ajoucodexpert.controller;
 import codemates.ajoucodexpert.domain.Authority;
 import codemates.ajoucodexpert.domain.Member;
 import codemates.ajoucodexpert.domain.UpdateRoleRequest;
+import codemates.ajoucodexpert.dto.UpdateRoleRequestDto;
 import codemates.ajoucodexpert.exception.BusinessException;
 import codemates.ajoucodexpert.exception.ExceptionType;
 import codemates.ajoucodexpert.service.AuthorityService;
@@ -16,6 +17,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/request")
 @RequiredArgsConstructor
@@ -25,6 +29,17 @@ public class UserRequestController {
     private final UpdateRoleRequestManager updateRoleRequestManager;
     private final MemberService memberService;
     private final AuthorityService authorityService;
+
+    @GetMapping("/role")
+    public ResponseEntity<List<UpdateRoleRequestDto.Element>> getUpdateRoleRequestList() {
+        log.info("회원 권한 변경 요청 목록 조회");
+
+        List<UpdateRoleRequestDto.Element> unresolved = new ArrayList<>();
+        for (UpdateRoleRequest request : updateRoleRequestManager.getUnresolvedRequests()) {
+            unresolved.add(UpdateRoleRequestDto.Element.of(request));
+        }
+        return ResponseEntity.ok(unresolved);
+    }
 
     @PostMapping("/role")
     public ResponseEntity<Object> processUpdateRoleRequest(

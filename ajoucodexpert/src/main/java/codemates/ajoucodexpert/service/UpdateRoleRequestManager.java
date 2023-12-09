@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -23,5 +25,10 @@ public class UpdateRoleRequestManager implements UserRequestService {
 
     public UpdateRoleRequest getRequest(Long id) {
         return updateRoleRequestRepository.findById(id).orElse(null);
+    }
+
+
+    public List<UpdateRoleRequest> getUnresolvedRequests() {
+        return updateRoleRequestRepository.findAllByRequestStatus(0);
     }
 }
