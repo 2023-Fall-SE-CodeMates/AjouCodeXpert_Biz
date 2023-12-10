@@ -1,6 +1,7 @@
 package codemates.ajoucodexpert.controller;
 
 import codemates.ajoucodexpert.domain.*;
+import codemates.ajoucodexpert.dto.JoinCourseRequestDto;
 import codemates.ajoucodexpert.dto.OpenClassRequestDto;
 import codemates.ajoucodexpert.dto.UpdateRoleRequestDto;
 import codemates.ajoucodexpert.enums.CourseRole;
@@ -105,7 +106,13 @@ public class UserRequestController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/course/join")
+    /**
+     * 반 참가 요청 API
+     * @param joinCode
+     * @param user
+     * @return
+     */
+    @PostMapping("/course/join/new")
     public ResponseEntity<Object> createJoinCourseRequest(
             @RequestParam("joinCode") String joinCode,
             @AuthenticationPrincipal User user) {
@@ -141,6 +148,61 @@ public class UserRequestController {
 
         return ResponseEntity.created(null).build();
 
+    }
+
+    /**
+     * 반 가입 요청 조회 API
+     * @param courseId
+     * @return
+     */
+    @GetMapping("/course/join")
+    public ResponseEntity<List<JoinCourseRequestDto.Element>> getJoinCourseRequest(
+            @RequestParam("courseId") Long courseId) {
+
+        log.info("반 가입 요청 조회 : {}", courseId);
+
+        Course course = courseService.getCourse(courseId);
+
+        // BusinessException
+        if (course == null) throw new BusinessException(ExceptionType.DATA_NOT_FOUND, "존재하지 않는 반입니다.");
+
+        // 가입 요청 조회
+        List<JoinCourseRequestDto.Element> unresolved = new ArrayList<>();
+        for (JoinCourseRequest request : joinCourseRequestManager.getUnresolvedRequests(course.getId())) {
+            unresolved.add(JoinCourseRequestDto.Element.of(request));
+        }
+
+        return ResponseEntity.ok(unresolved);
+    }
+
+    /**
+     * 반 가입 요청 처리 API
+     * @param requestId
+     * @param action
+     * @return
+     */
+    @PostMapping("/course/join")
+    public ResponseEntity<Object> processJoinCourseRequest(
+            @RequestParam("requestId") Long requestId,
+            @RequestParam("action") Long action) {
+
+        log.info("반 가입 요청 처리 : {}", requestId);
+
+        JoinCourseRequest request = joinCourseRequestManager.getRequest(requestId);
+
+        if (request == null) throw new BusinessException(ExceptionType.DATA_NOT_FOUND, "존재하지 않는 요청 아이디입니다.");
+
+        if (action == 1) {
+            joinCourseRequestResolver.accept(request);
+        }
+        else if (action == -1) {
+            joinCourseRequestResolver.reject(request);
+        }
+        else {
+            throw new BusinessException(ExceptionType.INVALID_INPUT, "권한 변경 요청 인자가 잘못되었습니다.");
+        }
+
+        return ResponseEntity.noContent().build();
     }
 
     private boolean alreadySentJoinRequest(Member member, Course course) {

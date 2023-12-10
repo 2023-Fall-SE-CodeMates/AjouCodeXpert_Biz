@@ -25,7 +25,7 @@ public class JoinCourseRequestDto {
         private Integer roleCode;
         private String roleName;
         
-        public Element of(JoinCourseRequest request) {
+        public static Element of(JoinCourseRequest request) {
             return Element.builder()
                     .id(request.getId())
                     .studentId(request.getRequester().getStudentInfo().getCode())
