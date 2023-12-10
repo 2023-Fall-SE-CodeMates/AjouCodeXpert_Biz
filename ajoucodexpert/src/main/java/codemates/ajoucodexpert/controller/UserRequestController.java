@@ -1,11 +1,10 @@
 package codemates.ajoucodexpert.controller;
 
-import codemates.ajoucodexpert.domain.Authority;
-import codemates.ajoucodexpert.domain.Member;
-import codemates.ajoucodexpert.domain.OpenClassRequest;
-import codemates.ajoucodexpert.domain.UpdateRoleRequest;
+import codemates.ajoucodexpert.domain.*;
 import codemates.ajoucodexpert.dto.OpenClassRequestDto;
 import codemates.ajoucodexpert.dto.UpdateRoleRequestDto;
+import codemates.ajoucodexpert.enums.CourseRole;
+import codemates.ajoucodexpert.enums.Role;
 import codemates.ajoucodexpert.exception.BusinessException;
 import codemates.ajoucodexpert.exception.ExceptionType;
 import codemates.ajoucodexpert.service.*;
@@ -28,7 +27,11 @@ public class UserRequestController {
     private final UpdateRoleRequestManager updateRoleRequestManager;
     private final OpenClassRequestResolver openClassRequestResolver;
     private final OpenClassRequestManager openClassRequestManager;
+    private final JoinCourseRequestManager joinCourseRequestManager;
+    private final JoinCourseRequestResolver joinCourseRequestResolver;
+    private final CourseMemberJoinManager courseMemberJoinManager;
     private final MemberService memberService;
+    private final CourseService courseService;
     private final AuthorityService authorityService;
 
     @GetMapping("/role")
@@ -100,6 +103,52 @@ public class UserRequestController {
         }
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/course/join")
+    public ResponseEntity<Object> createJoinCourseRequest(
+            @RequestParam("joinCode") String joinCode,
+            @AuthenticationPrincipal User user) {
+
+        log.info("반 가입 요청 : {} -> {}", user.getUsername(), joinCode);
+
+        Member member = memberService.getMember(user.getUsername());
+
+        // joinCode로 course 조회
+        Course course = courseService.getCourse(joinCode);
+
+        // BusinessException
+            // 존재하지 않는 경우
+        if (course == null) throw new BusinessException(ExceptionType.DATA_NOT_FOUND, "존재하지 않는 반입니다.");
+            // 이미 가입된 경우
+        if (alreadyJoinedCourse(member, course)) throw new BusinessException(ExceptionType.DATA_ALREADY_EXIST, "이미 가입된 반입니다.");
+            // 이미 요청한 경우
+        if (alreadySentJoinRequest(member, course)) throw new BusinessException(ExceptionType.DATA_ALREADY_EXIST, "이미 가입 요청한 반입니다.");
+
+        // 가입 요청 생성
+        CourseMemberRole role = null;
+            // 요청자가 학생 권한을 가질 경우
+        if (member.getAuthority().getCode().equals(Role.STUDENT.getCode()))
+            role = new CourseMemberRole(CourseRole.STUDENT);
+            // 요청자의 TA 권한을 가질 경우
+        else if (member.getAuthority().getCode().equals(Role.TA.getCode()))
+            role = new CourseMemberRole(CourseRole.TA);
+
+        if (role == null) throw new BusinessException(ExceptionType.INVALID_INPUT, "잘못된 요청입니다.");
+
+        // 가입 요청 저장
+        joinCourseRequestManager.createRequest(member, course, role);
+
+        return ResponseEntity.created(null).build();
+
+    }
+
+    private boolean alreadySentJoinRequest(Member member, Course course) {
+        return joinCourseRequestManager.getUnresolvedRequest(course, member) != null;
+    }
+
+    private boolean alreadyJoinedCourse(Member member, Course course) {
+        return courseMemberJoinManager.getJoinByMemberAndCourse(member, course) != null;
     }
 
 }

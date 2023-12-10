@@ -18,7 +18,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Course createCourse(Course newCourse) {
-        log.info("대회 개설 시작 : {}", newCourse.getId());
+        log.info("반 개설 시작 : {}", newCourse.getId());
         if (newCourse.getJoinCode() == null) {
             String generatedString = getRandomNumericAndAlphabeticString();
 
@@ -44,5 +44,12 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public Course getCourse(Long courseId) {
         return courseRepository.findById(courseId).orElse(null);
+    }
+
+    @Override
+    public Course getCourse(String joinCode) {
+        log.info("반 조회 : {}", joinCode);
+        return courseRepository.findByJoinCode(joinCode).orElse(null);
+
     }
 }

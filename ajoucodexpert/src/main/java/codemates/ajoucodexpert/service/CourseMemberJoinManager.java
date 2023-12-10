@@ -26,7 +26,7 @@ public class CourseMemberJoinManager {
         return courseMemberJoinRepository.save(newJoin);
     }
     public CourseMemberJoin getJoinByMemberAndCourse(Member member, Course course) {
-        return null;
+        return courseMemberJoinRepository.findByIdCourseIdAndIdMemberId(course.getId(), member.getLoginId()).orElse(null);
     }
     //
     public List<CourseMemberJoin> getJoinListByCreator(Member member) {

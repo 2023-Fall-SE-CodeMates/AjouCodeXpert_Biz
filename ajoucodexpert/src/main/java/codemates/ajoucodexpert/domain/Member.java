@@ -39,4 +39,7 @@ public class Member extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name="auth_code", referencedColumnName = "auth_code"))
     private Set<Authority> authorities;
 
+    public Authority getAuthority() {
+        return this.authorities.stream().findFirst().orElse(null);
+    }
 }

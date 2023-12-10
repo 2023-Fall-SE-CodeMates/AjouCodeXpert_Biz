@@ -16,7 +16,7 @@ public class Course extends BaseEntity{
     private String code;
     @Column(name = "crs_name", length = 50, nullable = false) @NonNull
     private String name;
-    @Column(name = "crs_join_code", length = 9, nullable = false)
+    @Column(name = "crs_join_code", length = 9, nullable = false, unique = true)
     private String joinCode;
 
     public void generateJoinCode(String joinCode) {
