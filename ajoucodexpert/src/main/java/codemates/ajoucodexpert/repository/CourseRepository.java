@@ -1,12 +1,13 @@
 package codemates.ajoucodexpert.repository;
 
-import codemates.ajoucodexpert.domain.CourseInfo;
+import codemates.ajoucodexpert.domain.Course;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface CourseInfoRepository extends JpaRepository<CourseInfo, Long> {
-    Optional<CourseInfo> findByCode(Long code);
+public interface CourseRepository extends JpaRepository<Course, Long> {
+    Optional<Course> findById(Long id);
 }

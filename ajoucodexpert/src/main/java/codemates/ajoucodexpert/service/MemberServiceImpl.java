@@ -36,7 +36,7 @@ public class MemberServiceImpl implements MemberService{
 
     @Override
     public Member getMember(String loginId) {
-        return null;
+        return memberRepository.findById(loginId).orElse(null);
     }
 
     @Override

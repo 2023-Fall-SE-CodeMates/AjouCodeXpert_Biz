@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 public class CourseInfoServiceImpl implements CourseInfoService {
     private final CourseInfoRepository courseInfoRepository;
     @Override
-    public CourseInfo getCourse(String code) {
+    public CourseInfo getCourse(Long code) {
         return courseInfoRepository.findByCode(code).orElse(null);
     }
 }
