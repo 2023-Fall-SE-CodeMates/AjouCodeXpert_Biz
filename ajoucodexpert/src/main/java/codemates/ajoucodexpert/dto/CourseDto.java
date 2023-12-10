@@ -10,7 +10,17 @@ public class CourseDto {
     @Builder
     @AllArgsConstructor @NoArgsConstructor
     public static class Create {
-        private String courseCode;
-        private String courseName;
+        private String subjectCode;
+        private String subjectName;
+    }
+
+    @Data
+    @Builder
+    @AllArgsConstructor @NoArgsConstructor
+    public static class Element {
+        private Long courseId;
+        private String subjectCode;
+        private String subjectName;
+        private boolean deletable;
     }
 }

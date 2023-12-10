@@ -4,6 +4,7 @@ import codemates.ajoucodexpert.domain.Authority;
 import codemates.ajoucodexpert.domain.Member;
 import codemates.ajoucodexpert.domain.OpenClassRequest;
 import codemates.ajoucodexpert.domain.UpdateRoleRequest;
+import codemates.ajoucodexpert.dto.OpenClassRequestDto;
 import codemates.ajoucodexpert.dto.UpdateRoleRequestDto;
 import codemates.ajoucodexpert.exception.BusinessException;
 import codemates.ajoucodexpert.exception.ExceptionType;
@@ -63,6 +64,18 @@ public class UserRequestController {
         }
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/course/open")
+    public ResponseEntity<List<OpenClassRequestDto.Element>> getOpenClassRequestList() {
+        log.info("반 개설 요청 목록 조회");
+
+        List<OpenClassRequestDto.Element> unresolved = new ArrayList<>();
+
+        for (OpenClassRequest request : openClassRequestManager.getUnResolvedRequest()) {
+            unresolved.add(OpenClassRequestDto.Element.of(request));
+        }
+        return ResponseEntity.ok(unresolved);
     }
 
     @PostMapping("/course/open")

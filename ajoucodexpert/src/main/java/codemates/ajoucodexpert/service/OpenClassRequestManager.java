@@ -19,8 +19,8 @@ public class OpenClassRequestManager implements UserRequestService{
     private final OpenClassRequestRepository openClassRequestRepository;
 
     public OpenClassRequest createRequest(Member requester, CourseDto.Create dto) {
-        log.info("반 개설 시작 : {} -> {}", requester.getLoginId(), dto.getCourseCode());
-        OpenClassRequest newRequest = new OpenClassRequest(requester, dto.getCourseCode(), dto.getCourseName());
+        log.info("반 개설 시작 : {} -> {}", requester.getLoginId(), dto.getSubjectCode());
+        OpenClassRequest newRequest = new OpenClassRequest(requester, dto.getSubjectCode(), dto.getSubjectName());
         return openClassRequestRepository.save(newRequest);
     }
 
