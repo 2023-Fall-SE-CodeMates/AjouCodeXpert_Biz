@@ -11,16 +11,15 @@ import codemates.ajoucodexpert.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/api/member")
+@RequestMapping("/api/user")
 @RequiredArgsConstructor
 @Slf4j
 public class MemberController {
@@ -84,5 +83,14 @@ public class MemberController {
         }
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/info")
+    public ResponseEntity<MemberDto.Info> getMemberInfo(
+            @AuthenticationPrincipal User user
+            ) {
+        log.debug("회원 정보 요청 받음 : {}", user.getUsername());
+        Member member = memberService.getMember(user.getUsername());
+        return ResponseEntity.ok(MemberDto.Info.of(member));
     }
 }
