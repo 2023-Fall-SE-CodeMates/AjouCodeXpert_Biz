@@ -1,10 +1,7 @@
 package codemates.ajoucodexpert.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -14,7 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "Homework")
 @Builder
-@Getter
+@Getter @Setter
 @AllArgsConstructor @NoArgsConstructor
 public class Homework {
     @Embeddable

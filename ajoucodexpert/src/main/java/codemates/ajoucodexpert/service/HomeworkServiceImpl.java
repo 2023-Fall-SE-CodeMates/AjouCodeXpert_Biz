@@ -19,15 +19,36 @@ public class HomeworkServiceImpl {
     private final HomeworkRepository homeworkRepository;
 
     public Homework createHomework(HomeworkDto.Create dto, Course course) {
-        log.info("과제 생성 : {}", dto.getTitle());
+        log.info("과제 생성 : {} - {}", dto.getHomeworkIdx(), dto.getTitle());
         Homework.HomeworkId id = new Homework.HomeworkId(course.getId(), dto.getHomeworkIdx());
         Homework newHomework = new Homework(id, dto.getTitle(), dto.getContent(), dto.getEndDate(), 0, course);
         return homeworkRepository.save(newHomework);
     }
 
+    public Homework updateHomework(HomeworkDto.Create dto, Homework homework) {
+        log.info("과제 수정 : {}", dto.getTitle());
+        homework.setTitle(dto.getTitle());
+        homework.setContent(dto.getContent());
+        homework.setEndDate(dto.getEndDate());
+        return homework;
+    }
+
+    public Homework updateHomework(Homework homework, HomeworkDto.Create dto) {
+        log.info("과제 수정 : {}", dto.getTitle());
+        homework.setTitle(dto.getTitle());
+        homework.setContent(dto.getContent());
+        homework.setEndDate(dto.getEndDate());
+        return homework;
+    }
+
     public List<Homework> getHomeworks(Long courseId) {
         log.info("과제 조회 : {}", courseId);
         return homeworkRepository.findAllById_CourseId(courseId);
+    }
+
+    public Homework getHomework(Long courseId, Long homeworkIdx) {
+        log.info("과제 조회 : {}.{}", courseId, homeworkIdx);
+        return homeworkRepository.findById_CourseIdAndId_HomeworkIdx(courseId, homeworkIdx).orElse(null);
     }
 
     public void deleteHomework(Homework homework) {
