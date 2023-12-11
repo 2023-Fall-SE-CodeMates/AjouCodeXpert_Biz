@@ -63,7 +63,7 @@ public class HomeworkServiceImpl {
 
     public Long getLastHomeworkIndex(Long courseId) {
         log.info("과제 마지막 인덱스 조회 : {}", courseId);
-        Homework lastHw =  homeworkRepository.findTopById_CourseId(courseId).orElse(null);
+        Homework lastHw =  homeworkRepository.findTopById_CourseIdOrderById_HomeworkIdxDesc(courseId).orElse(null);
         return lastHw == null ? 0 : lastHw.getId().getHomeworkIdx();
     }
 }

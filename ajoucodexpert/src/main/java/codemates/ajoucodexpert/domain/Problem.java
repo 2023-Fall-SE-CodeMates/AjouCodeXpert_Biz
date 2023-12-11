@@ -6,6 +6,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name = "Problem")
@@ -48,4 +49,8 @@ public class Problem {
             @JoinColumn(name = "hw_idx", referencedColumnName = "hw_idx")
     })
     private Homework homework;
+
+    @OneToMany(mappedBy = "problem", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TestCase> testCases;
+
 }

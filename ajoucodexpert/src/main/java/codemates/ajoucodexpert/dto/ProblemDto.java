@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ProblemDto {
     @Data
     @Builder
@@ -18,6 +21,7 @@ public class ProblemDto {
         private Integer langCode;
         private String langName;
         private Boolean removable;
+        private List<TestCaseDto> testCases;
 
         public static Detail of(Problem problem) {
             String languageName = problem.getLanguage() == 0 ? "C" : problem.getLanguage() == 1 ? "JAVA" : "PYTHON";
@@ -29,6 +33,7 @@ public class ProblemDto {
                     .langCode(problem.getLanguage())
                     .langName(languageName)
                     .removable(false)
+                    .testCases(new ArrayList<>())
                     .build();
         }
     }

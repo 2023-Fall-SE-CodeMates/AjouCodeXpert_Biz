@@ -3,6 +3,7 @@ package codemates.ajoucodexpert.controller;
 import codemates.ajoucodexpert.domain.*;
 import codemates.ajoucodexpert.dto.HomeworkDto;
 import codemates.ajoucodexpert.dto.ProblemDto;
+import codemates.ajoucodexpert.dto.TestCaseDto;
 import codemates.ajoucodexpert.enums.CourseRole;
 import codemates.ajoucodexpert.exception.BusinessException;
 import codemates.ajoucodexpert.exception.ExceptionType;
@@ -78,7 +79,12 @@ public class HomeworkController {
         long nextIdx = problemService.getLastProblemIdx(courseId, createdHw.getId().getHomeworkIdx()) + 1;
         for (ProblemDto.Detail problem : createDto.getProblems()) {
             problem.setIndex(nextIdx++);
-            problemService.createProblem(problem, createdHw);
+            Problem createdProblem = problemService.createProblem(problem, createdHw);
+            // 테스트케이스 생성
+            List<TestCase> testCases = problemService.createTestCases(createdProblem, problem.getTestCases());
+            // 테스트케이스 업데이트
+            problemService.updateTestCases(createdProblem, testCases);
+
             // 추가된 문제만큼 총점 추가
             createdHw.setTotalScore(createdHw.getTotalScore() + problem.getPoints());
             homeworkService.updateHomework(createdHw);
@@ -114,6 +120,11 @@ public class HomeworkController {
         for (Problem problem : problemService.getProblems(courseId, homeworkIdx)) {
             ProblemDto.Detail problemDto = ProblemDto.Detail.of(problem);
             problemDto.setRemovable(removable);
+            List<TestCaseDto> testCases = new ArrayList<>();
+            for (TestCase testCase : problem.getTestCases()) {
+                testCases.add(new TestCaseDto(testCase.getId().getTestCaseIdx(), testCase.getInput(), testCase.getOutput()));
+            }
+            problemDto.setTestCases(testCases);
             problems.add(problemDto);
         }
         homeworkDto.setProblems(problems);
@@ -162,12 +173,21 @@ public class HomeworkController {
                 // 총점 변경
                 homework.setTotalScore(homework.getTotalScore() - problem.getScore() + problemDto.getPoints());
                 problemService.updateProblem(problemDto, problem);
+                // 테스트케이스 생성
+                List<TestCase> testCases = problemService.createTestCases(problem, problemDto.getTestCases());
+                // 테스트케이스 업데이트
+                problemService.updateTestCases(problem, testCases);
+
             } else {
                 // 3. 추가
                 problemDto.setIndex(problemService.getLastProblemIdx(courseId, homeworkIdx) + 1);
                 // 총점 증가
                 homework.setTotalScore(homework.getTotalScore() + problemDto.getPoints());
-                problemService.createProblem(problemDto, homework);
+                Problem createdProblem = problemService.createProblem(problemDto, homework);
+                // 테스트케이스 생성
+                List<TestCase> testCases = problemService.createTestCases(createdProblem, problemDto.getTestCases());
+                // 테스트케이스 업데이트
+                problemService.updateTestCases(createdProblem, testCases);
             }
         }
 
