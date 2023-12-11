@@ -24,6 +24,9 @@ public class JoinCourseRequestDto {
         private String studentName;
         private Integer roleCode;
         private String roleName;
+        private String loginId;
+        private String majorCode;
+        private String majorName;
         
         public static Element of(JoinCourseRequest request) {
             return Element.builder()
@@ -32,6 +35,9 @@ public class JoinCourseRequestDto {
                     .studentName(request.getRequester().getStudentInfo().getName())
                     .roleCode(request.getRole().getCode())
                     .roleName(request.getRole().getName())
+                    .loginId(request.getRequester().getLoginId())
+                    .majorCode(request.getRequester().getMajor().getCode())
+                    .majorName(request.getRequester().getMajor().getName())
                     .build();
         }
     }

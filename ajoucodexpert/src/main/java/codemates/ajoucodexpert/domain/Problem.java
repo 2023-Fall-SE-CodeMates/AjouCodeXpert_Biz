@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "Problem")
-@Getter
+@Getter @Setter
 @Builder
 @AllArgsConstructor @NoArgsConstructor
 public class Problem {

@@ -7,10 +7,7 @@ import codemates.ajoucodexpert.dto.HomeworkDto;
 import codemates.ajoucodexpert.enums.CourseRole;
 import codemates.ajoucodexpert.exception.BusinessException;
 import codemates.ajoucodexpert.exception.ExceptionType;
-import codemates.ajoucodexpert.service.CourseMemberJoinManager;
-import codemates.ajoucodexpert.service.CourseService;
-import codemates.ajoucodexpert.service.HomeworkServiceImpl;
-import codemates.ajoucodexpert.service.MemberService;
+import codemates.ajoucodexpert.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +27,7 @@ public class HomeworkController {
     private final CourseService courseService;
     private final CourseMemberJoinManager courseMemberJoinManager;
     private final MemberService memberService;
+    private final ProblemServiceImpl problemService;
 
     // 과제 조회하기 API
     @GetMapping("/course/{courseId}/homework")
