@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -136,6 +137,40 @@ public class HomeworkController {
         }
 
         homeworkService.updateHomework(homework, updateDto);
+
+        // 원래 과제에 포함된 문제 인덱스 리스트를 추출
+        List<Problem> originalProblems = problemService.getProblems(courseId, homeworkIdx);
+        List<Long> originalProblemIdxList = problemService.getProblemIdxList(courseId, homeworkIdx);
+
+        // 새로운 DTO에 포함된 문제 인덱스 리스트를 추출
+        List<Long> newProblemIdxList = updateDto.getProblems().stream()
+                .map(ProblemDto.Detail::getIndex)
+                .toList();
+        // 두 리스트를 비교하여 새로운 문제가 추가되었는지, 삭제되었는지, 수정되었는지 확인
+        // 1. 삭제
+        for (Problem problem : originalProblems) {
+            if (!newProblemIdxList.contains(problem.getId().getProblemIdx())) {
+                // 총점 감소
+                homework.setTotalScore(homework.getTotalScore() - problem.getScore());
+                problemService.deleteProblem(problem);
+            }
+        }
+        // 2. 수정
+        for (ProblemDto.Detail problemDto : updateDto.getProblems()) {
+            if (problemDto.getIndex() != null && originalProblemIdxList.contains(problemDto.getIndex())) {
+                Problem problem = problemService.getProblem(courseId, homeworkIdx, problemDto.getIndex());
+                // 총점 변경
+                homework.setTotalScore(homework.getTotalScore() - problem.getScore() + problemDto.getPoints());
+                problemService.updateProblem(problemDto, problem);
+            } else {
+                // 3. 추가
+                problemDto.setIndex(problemService.getLastProblemIdx(courseId, homeworkIdx) + 1);
+                // 총점 증가
+                homework.setTotalScore(homework.getTotalScore() + problemDto.getPoints());
+                problemService.createProblem(problemDto, homework);
+            }
+        }
+
 
         return ResponseEntity.noContent().build();
     }

@@ -24,6 +24,11 @@ public class ProblemServiceImpl {
         return problemRepository.findAllById_CourseIdAndId_HomeworkIdx(courseId, homeworkIdx);
     }
 
+    public Problem getProblem(Long courseId, Long homeworkIdx, Long problemIdx) {
+        log.info("문제 조회 : {}.{}.{}", courseId, homeworkIdx, problemIdx);
+        return problemRepository.findById_CourseIdAndId_HomeworkIdxAndId_ProblemIdx(courseId, homeworkIdx, problemIdx).orElse(null);
+    }
+
     public Problem createProblem(ProblemDto.Detail dto, Homework homework) {
         log.info("문제 생성 : {} - {}", dto.getIndex(), dto.getTitle());
         Problem.ProblemId id = new Problem.ProblemId(homework.getId().getCourseId(), homework.getId().getHomeworkIdx(), dto.getIndex());
