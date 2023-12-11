@@ -1,8 +1,6 @@
 package codemates.ajoucodexpert.controller;
 
-import codemates.ajoucodexpert.domain.Course;
-import codemates.ajoucodexpert.domain.CourseMemberRole;
-import codemates.ajoucodexpert.domain.Homework;
+import codemates.ajoucodexpert.domain.*;
 import codemates.ajoucodexpert.dto.HomeworkDto;
 import codemates.ajoucodexpert.dto.ProblemDto;
 import codemates.ajoucodexpert.enums.CourseRole;
@@ -76,12 +74,50 @@ public class HomeworkController {
         Homework createdHw = homeworkService.createHomework(createDto, course);
 
         // 과제에 문제 추가
+        long nextIdx = problemService.getLastProblemIdx(courseId, createdHw.getId().getHomeworkIdx()) + 1;
         for (ProblemDto.Detail problem : createDto.getProblems()) {
-            Long nextIdx = problemService.getLastProblemIdx(courseId, createdHw.getId().getHomeworkIdx()) + 1;
+            problem.setIndex(nextIdx++);
             problemService.createProblem(problem, createdHw);
+            // 추가된 문제만큼 총점 추가
+            createdHw.setTotalScore(createdHw.getTotalScore() + problem.getPoints());
+            homeworkService.updateHomework(createdHw);
         }
 
+
         return ResponseEntity.created(null).build();
+    }
+
+    @GetMapping("/course/{courseId}/homework/{homeworkIdx}")
+    public ResponseEntity<HomeworkDto.Detail> getHomework(
+            @PathVariable Long courseId,
+            @PathVariable Long homeworkIdx,
+            @AuthenticationPrincipal User user
+    ) {
+        log.info("과제 조회 요청 : {} -> {}", courseId, homeworkIdx);
+
+        Homework homework = homeworkService.getHomework(courseId, homeworkIdx);
+        Member member = memberService.getMember(user.getUsername());
+        Course course = courseService.getCourse(courseId);
+
+        if (homework == null) {
+            throw new BusinessException(ExceptionType.DATA_NOT_FOUND, "해당 과제를 찾을 수 없습니다.");
+        }
+
+        HomeworkDto.Detail homeworkDto = HomeworkDto.Detail.of(homework);
+        CourseMemberRole courseRole = courseMemberJoinManager.getJoinByMemberAndCourse(member, course).getRole();
+        boolean removable = courseRole.getCode().equals(CourseRole.TA.getCode()) || courseRole.getCode().equals(CourseRole.CREATOR.getCode());
+        homeworkDto.setRemovable(removable);
+
+        // 과제에 포함된 문제들 조회
+        List<ProblemDto.Detail> problems = new ArrayList<>();
+        for (Problem problem : problemService.getProblems(courseId, homeworkIdx)) {
+            ProblemDto.Detail problemDto = ProblemDto.Detail.of(problem);
+            problemDto.setRemovable(removable);
+            problems.add(problemDto);
+        }
+        homeworkDto.setProblems(problems);
+
+        return ResponseEntity.ok(homeworkDto);
     }
 
     // 과제 수정하기 API

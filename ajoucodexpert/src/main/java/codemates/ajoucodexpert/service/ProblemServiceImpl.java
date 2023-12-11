@@ -1,6 +1,5 @@
 package codemates.ajoucodexpert.service;
 
-import codemates.ajoucodexpert.domain.Course;
 import codemates.ajoucodexpert.domain.Homework;
 import codemates.ajoucodexpert.domain.Problem;
 import codemates.ajoucodexpert.dto.ProblemDto;
@@ -26,9 +25,9 @@ public class ProblemServiceImpl {
     }
 
     public Problem createProblem(ProblemDto.Detail dto, Homework homework) {
-        log.info("문제 생성 : {} - {}", dto.getProblemIdx(), dto.getTitle());
-        Problem.ProblemId id = new Problem.ProblemId(homework.getId().getCourseId(), homework.getId().getHomeworkIdx(), dto.getProblemIdx());
-        Problem newProblem = new Problem(id, dto.getTitle(), dto.getDescription(), dto.getScore(), dto.getLangCode(), homework);
+        log.info("문제 생성 : {} - {}", dto.getIndex(), dto.getTitle());
+        Problem.ProblemId id = new Problem.ProblemId(homework.getId().getCourseId(), homework.getId().getHomeworkIdx(), dto.getIndex());
+        Problem newProblem = new Problem(id, dto.getTitle(), dto.getDescription(), dto.getPoints(), dto.getLangCode(), homework);
         return problemRepository.save(newProblem);
     }
 
@@ -36,9 +35,14 @@ public class ProblemServiceImpl {
         log.info("문제 수정 : {}", dto.getTitle());
         problem.setTitle(dto.getTitle());
         problem.setDescription(dto.getDescription());
-        problem.setScore(dto.getScore());
+        problem.setScore(dto.getPoints());
         problem.setLanguage(dto.getLangCode());
-        return problem;
+        return problemRepository.save(problem);
+    }
+
+    public Problem saveProblem(Problem problem) {
+        log.info("문제 저장 : {}", problem.getTitle());
+        return problemRepository.save(problem);
     }
 
     public void deleteProblem(Problem problem) {

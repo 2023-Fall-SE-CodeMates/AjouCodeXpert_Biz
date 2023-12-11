@@ -11,22 +11,24 @@ public class ProblemDto {
     @Builder
     @AllArgsConstructor @NoArgsConstructor
     public static class Detail {
-        private Long problemIdx;
+        private Long index;
         private String title;
         private String description;
-        private Integer score;
+        private Integer points;
         private Integer langCode;
         private String langName;
+        private Boolean removable;
 
         public static Detail of(Problem problem) {
             String languageName = problem.getLanguage() == 0 ? "C" : problem.getLanguage() == 1 ? "JAVA" : "PYTHON";
             return Detail.builder()
-                    .problemIdx(problem.getId().getProblemIdx())
+                    .index(problem.getId().getProblemIdx())
                     .title(problem.getTitle())
                     .description(problem.getDescription())
-                    .score(problem.getScore())
+                    .points(problem.getScore())
                     .langCode(problem.getLanguage())
                     .langName(languageName)
+                    .removable(false)
                     .build();
         }
     }

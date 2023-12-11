@@ -30,7 +30,7 @@ public class HomeworkServiceImpl {
         homework.setTitle(dto.getTitle());
         homework.setContent(dto.getContent());
         homework.setEndDate(dto.getEndDate());
-        return homework;
+        return homeworkRepository.save(homework);
     }
 
     public Homework updateHomework(Homework homework, HomeworkDto.Create dto) {
@@ -38,7 +38,12 @@ public class HomeworkServiceImpl {
         homework.setTitle(dto.getTitle());
         homework.setContent(dto.getContent());
         homework.setEndDate(dto.getEndDate());
-        return homework;
+        return homeworkRepository.save(homework);
+    }
+
+    public Homework updateHomework(Homework homework) {
+        log.info("과제 수정 : {}", homework.getTitle());
+        return homeworkRepository.save(homework);
     }
 
     public List<Homework> getHomeworks(Long courseId) {
