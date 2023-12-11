@@ -88,8 +88,8 @@ public class SecurityConfiguration {
                 .logout(configurer -> configurer.clearAuthentication(true))
 
 
-                .requiresChannel(channel ->
-                       channel.anyRequest().requiresSecure())
+//                .requiresChannel(channel ->
+//                       channel.anyRequest().requiresSecure())
                 .apply(new JwtSecurityConfig(tokenProvider));
 
 

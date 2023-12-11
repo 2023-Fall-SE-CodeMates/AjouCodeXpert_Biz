@@ -53,17 +53,36 @@ public class CourseController {
     public ResponseEntity<List<CourseDto.Element>> CourseListByCreator(
             @AuthenticationPrincipal User user
     ) {
-        log.info("반 목록 조회 by TA : {}", user.getUsername());
-        Member requester = memberService.getMember(user.getUsername());
+        log.info("반 목록 조회 : {}", user.getUsername());
+
+        Member member = memberService.getMember(user.getUsername());
+        if (member == null) throw new BusinessException(ExceptionType.UNAUTHORIZED, "로그인이 필요합니다.");
+
         List<CourseDto.Element> courseList = new ArrayList<>();
-        List<CourseMemberJoin> CreatorJoinList = courseMemberJoinManager.getJoinListByCreator(requester);
-        for (CourseMemberJoin join : CreatorJoinList) {
-            courseList.add(new CourseDto.Element(join.getCourse().getId(), join.getCourse().getCode(), join.getCourse().getName(), true));
+
+        Authority memberAuth = member.getAuthority();
+        if (memberAuth.getCode().equals(Role.TA.getCode())) {
+            List<CourseMemberJoin> CreatorJoinList = courseMemberJoinManager.getJoinListByCreator(member);
+            for (CourseMemberJoin join : CreatorJoinList) {
+                courseList.add(new CourseDto.Element(join.getCourse().getId(), join.getCourse().getCode(), join.getCourse().getName(), true));
+            }
+            List<CourseMemberJoin> TAJoinList = courseMemberJoinManager.getJoinListByTa(member);
+            for (CourseMemberJoin join : TAJoinList) {
+                courseList.add(new CourseDto.Element(join.getCourse().getId(), join.getCourse().getCode(), join.getCourse().getName(), false));
+            }
         }
-        List<CourseMemberJoin> TAJoinList = courseMemberJoinManager.getJoinListByTa(requester);
-        for (CourseMemberJoin join : TAJoinList) {
-            courseList.add(new CourseDto.Element(join.getCourse().getId(), join.getCourse().getCode(), join.getCourse().getName(), false));
+        else if (memberAuth.getCode().equals(Role.STUDENT.getCode())) {
+            List<CourseMemberJoin> StudentJoinList = courseMemberJoinManager.getJoinListByStudent(member);
+            for (CourseMemberJoin join : StudentJoinList) {
+                courseList.add(new CourseDto.Element(join.getCourse().getId(), join.getCourse().getCode(), join.getCourse().getName(), false));
+            }
         }
+        else {
+            throw new BusinessException(ExceptionType.UNAUTHORIZED, "학생 또는 TA 권한이 필요합니다.");
+        }
+
+
+
 
 
         return ResponseEntity.ok(courseList);
