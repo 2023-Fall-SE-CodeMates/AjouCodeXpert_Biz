@@ -28,15 +28,13 @@ import java.util.HashMap;
 public class AuthController {
     private final JwtTokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private final MemberService memberService;
     @Value("${jwt.header}") String JWT_HEADER;
     @Value("${jwt.prefix}") String JWT_PREFIX;
 
 
-    public AuthController(JwtTokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder, MemberService memberService) {
+    public AuthController(JwtTokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder) {
         this.tokenProvider = tokenProvider;
         this.authenticationManagerBuilder = authenticationManagerBuilder;
-        this.memberService = memberService;
     }
 
     @PostMapping("/login")
