@@ -19,6 +19,7 @@ public class HomeworkDto {
         private String title;
         private String content;
         private LocalDateTime endDate;
+        private List<ProblemDto.Detail> problems;
 
     }
 
@@ -31,7 +32,7 @@ public class HomeworkDto {
         private LocalDateTime createdDate;
         private LocalDateTime endDate;
         private Boolean removable;
-        private List<ProblemDto.Element> problems;
+        private List<ProblemDto.Detail> problems;
 
         public static Detail of(Homework homework) {
             return Detail.builder()

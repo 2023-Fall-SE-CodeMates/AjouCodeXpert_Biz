@@ -4,6 +4,7 @@ import codemates.ajoucodexpert.domain.Course;
 import codemates.ajoucodexpert.domain.CourseMemberRole;
 import codemates.ajoucodexpert.domain.Homework;
 import codemates.ajoucodexpert.dto.HomeworkDto;
+import codemates.ajoucodexpert.dto.ProblemDto;
 import codemates.ajoucodexpert.enums.CourseRole;
 import codemates.ajoucodexpert.exception.BusinessException;
 import codemates.ajoucodexpert.exception.ExceptionType;
@@ -70,8 +71,15 @@ public class HomeworkController {
             throw new BusinessException(ExceptionType.DATA_NOT_FOUND, "해당 반을 찾을 수 없습니다.");
         }
 
+        // 과제 생성
         createDto.setHomeworkIdx(homeworkService.getLastHomeworkIndex(courseId) + 1);
-        homeworkService.createHomework(createDto, course);
+        Homework createdHw = homeworkService.createHomework(createDto, course);
+
+        // 과제에 문제 추가
+        for (ProblemDto.Detail problem : createDto.getProblems()) {
+            Long nextIdx = problemService.getLastProblemIdx(courseId, createdHw.getId().getHomeworkIdx()) + 1;
+            problemService.createProblem(problem, createdHw);
+        }
 
         return ResponseEntity.created(null).build();
     }

@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,9 +20,9 @@ import java.util.List;
 public class ProblemServiceImpl {
     private final ProblemRepository problemRepository;
 
-    public List<Problem> getProblems(Long courseId) {
+    public List<Problem> getProblems(Long courseId, Long homeworkIdx) {
         log.info("문제 조회 : {}", courseId);
-        return problemRepository.findAllById_CourseId(courseId);
+        return problemRepository.findAllById_CourseIdAndId_HomeworkIdx(courseId, homeworkIdx);
     }
 
     public Problem createProblem(ProblemDto.Detail dto, Homework homework) {
@@ -46,4 +47,21 @@ public class ProblemServiceImpl {
     }
 
     // 과제에 속한 문제 인덱스 목록 조회
+    public List<Long> getProblemIdxList(Long courseId, Long homeworkIdx) {
+        log.info("문제 인덱스 목록 조회 : {}.{}", courseId, homeworkIdx);
+        List<Long> problemIdxList = new ArrayList<>();
+
+        for (Problem problem : problemRepository.findAllById_CourseIdAndId_HomeworkIdx(courseId, homeworkIdx)) {
+            problemIdxList.add(problem.getId().getProblemIdx());
+        }
+
+        return problemIdxList;
+    }
+
+    public Long getLastProblemIdx(Long courseId, Long homeworkIdx) {
+        log.info("마지막 문제 인덱스 조회 : {}.{}", courseId, homeworkIdx);
+
+        Problem lastProblem = problemRepository.findTopById_CourseIdAndId_HomeworkIdxOrderById_HomeworkIdxDesc(courseId, homeworkIdx).orElse(null);
+        return lastProblem == null ? 0L : lastProblem.getId().getProblemIdx();
+    }
 }
