@@ -29,6 +29,7 @@ public class HomeworkDto {
     public static class Detail {
         private Long homeworkIdx;
         private String title;
+        private String content;
         private LocalDateTime createdDate;
         private LocalDateTime endDate;
         private Boolean removable;
@@ -38,6 +39,7 @@ public class HomeworkDto {
             return Detail.builder()
                     .homeworkIdx(homework.getId().getHomeworkIdx())
                     .title(homework.getTitle())
+                    .content(homework.getContent())
                     .createdDate(homework.getCourse().getCreatedDate())
                     .endDate(homework.getEndDate())
                     .removable(false)
