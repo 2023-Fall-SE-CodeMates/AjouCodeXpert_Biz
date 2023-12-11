@@ -50,11 +50,17 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String jwt = tokenProvider.createToken(authentication); // JWT Token 생성
+        // jwt 토큰에서 유저 아이디와 권한 정보를 추출
+        String loginId = tokenProvider.getUserIdFromJwt(jwt);
+        String roleName = tokenProvider.getAuthentication(jwt).getAuthorities().stream().toList().get(0).getAuthority();
+        Integer role = roleName.equals("ROLE_ADMIN") ? 0 : roleName.equals("ROLE_TA") ? 1 : 2;
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(JwtAuthenticationFilter.header, JwtAuthenticationFilter.prefix + " " + jwt);
         HashMap<String, Object> res = new HashMap<>(){{
             put("token", jwt);
+            put("loginId", loginId);
+            put("role", role);
         }};
 
         return new ResponseEntity<>(res, httpHeaders, HttpStatus.OK);
