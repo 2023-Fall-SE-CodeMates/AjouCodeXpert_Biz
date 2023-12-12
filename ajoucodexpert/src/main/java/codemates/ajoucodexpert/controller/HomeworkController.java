@@ -167,6 +167,7 @@ public class HomeworkController {
             }
         }
         // 2. 수정
+        Long lastProblemIdx = problemService.getLastProblemIdx(courseId, homeworkIdx);
         for (ProblemDto.Detail problemDto : updateDto.getProblems()) {
             if (problemDto.getIndex() != null && originalProblemIdxList.contains(problemDto.getIndex())) {
                 Problem problem = problemService.getProblem(courseId, homeworkIdx, problemDto.getIndex());
@@ -180,7 +181,7 @@ public class HomeworkController {
 
             } else {
                 // 3. 추가
-                problemDto.setIndex(problemService.getLastProblemIdx(courseId, homeworkIdx) + 1);
+                problemDto.setIndex(++lastProblemIdx);
                 // 총점 증가
                 homework.setTotalScore(homework.getTotalScore() + problemDto.getPoints());
                 Problem createdProblem = problemService.createProblem(problemDto, homework);
