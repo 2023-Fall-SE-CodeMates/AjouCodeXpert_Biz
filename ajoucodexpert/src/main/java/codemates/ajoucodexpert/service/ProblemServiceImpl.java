@@ -74,7 +74,7 @@ public class ProblemServiceImpl {
     public Long getLastProblemIdx(Long courseId, Long homeworkIdx) {
         log.info("마지막 문제 인덱스 조회 : {}.{}", courseId, homeworkIdx);
 
-        Problem lastProblem = problemRepository.findTopById_CourseIdAndId_HomeworkIdxOrderById_HomeworkIdxDesc(courseId, homeworkIdx).orElse(null);
+        Problem lastProblem = problemRepository.findTopById_CourseIdAndId_HomeworkIdxOrderById_ProblemIdxDesc(courseId, homeworkIdx).orElse(null);
         return lastProblem == null ? 0L : lastProblem.getId().getProblemIdx();
     }
 
